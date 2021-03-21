@@ -11,6 +11,4 @@ class Attacker(object):
         self.view_range = view_range
         self.consist_list = {}
 
-    def attack(self):
-        pass
 

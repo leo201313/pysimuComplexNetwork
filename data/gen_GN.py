@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-G_fb = nx.read_edgelist("./data/facebook_combined.txt", create_using = nx.Graph(), nodetype=int)
+G_fb = nx.read_edgelist("facebook_combined.txt", create_using = nx.Graph(), nodetype=int)
 print(nx.info(G_fb))
 
 # if need drawing

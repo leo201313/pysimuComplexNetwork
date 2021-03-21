@@ -17,11 +17,15 @@ class Node(object):
         self.attack_cost = {}   # roughly related to degree-centrality
         self.recovery_ability = {} # roughly related to clustering
         self.state = {} # 1 is well served, 0 is defeated and recovery, 2 is overload malfunction
+        self.degree = {}
+        self.num = 0
 
     def ini(self,graph,load_lst):
         self.id_list = list(graph.nodes)
+        self.num = len(self.id_list)
         self.load = load_lst
         node_degree = dict(graph.degree)
+        self.degree = node_degree
 
         degree_centrality = dict(nx.degree_centrality(graph))
         max_degree_node = max(degree_centrality,key=degree_centrality.get)
@@ -45,7 +49,10 @@ class Node(object):
             attack_cost = int(attack_cost)
             self.attack_cost[nodeid] = attack_cost
 
-            recovery = 5 + abs(random.normalvariate(10,3)) + 20 * (clustering[nodeid] - clustering[min_clustering]) / clustering_delta
+            if clustering_delta==0:
+                recovery = 5 + abs(random.normalvariate(10, 3))
+            else:
+                recovery = 5 + abs(random.normalvariate(10,3)) + 10 * (clustering[nodeid] - clustering[min_clustering]) / clustering_delta
             recovery = int(recovery)
             self.recovery_ability[nodeid] = recovery
 
