@@ -1,12 +1,15 @@
 # _pysimuComplexNetwork project_
 
 ## Welcome to the MixNetwork!
+![pic1](./img/pic1.png)
+![pic2](./img/pic2.png)
 
 最近在做毕业设计，题目为建立一个复杂网络级联攻击模型。在查阅了各方面文献后，发现python编写的复杂网络平台存在缺失，所以本人在networkx库的基础上进行拓展，建立了本复杂网络级联攻击仿真平台，called MixNetwork！
 
 ## Update 
 * v1.1 优化了RD攻击模型的局部位置移动算法；增加了随机攻击模型RANDOM；增加了叙述攻击模型攻击效果的两种方式；使用紫色节点绘制上一次攻击的节点，方便区分已经被攻击的节点。
 * v1.0 项目开源
+
 
 ## How to use
 Just do as follow:

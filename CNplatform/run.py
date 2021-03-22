@@ -13,8 +13,8 @@ warnings.filterwarnings("ignore")
 
 #########################
 
-dataset = 'USpowerGrid'
-# dataset = 'ba500'
+# dataset = 'USpowerGrid'
+dataset = 'ba500'
 # dataset = 'facebook_combined'
 
 data_addr = "../data/" + dataset + ".txt"
