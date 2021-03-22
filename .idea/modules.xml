@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pysimuComlexNetwork.iml" filepath="$PROJECT_DIR$/.idea/pysimuComlexNetwork.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pysimuComplexNetwork.iml" filepath="$PROJECT_DIR$/.idea/pysimuComplexNetwork.iml" />
     </modules>
   </component>
 </project>
