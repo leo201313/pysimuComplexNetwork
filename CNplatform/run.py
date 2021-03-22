@@ -9,17 +9,26 @@ import warnings
 import tkinter
 
 warnings.filterwarnings("ignore")
+
+
 #########################
-data_addr = "../data/USpowerGrid.txt"
-pos_addr = "../data/USpowerGrid.json"
-# data_addr = "../data/ba500.txt"
-# pos_addr = "../data/ba500.json"
-# data_addr = "../data/facebook_combined.txt"
-# pos_addr = "../data/facebook_combined.json"
+
+dataset = 'USpowerGrid'
+# dataset = 'ba500'
+# dataset = 'facebook_combined'
+
+data_addr = "../data/" + dataset + ".txt"
+pos_addr = "../data/" + dataset + ".json"
+##########################
+
+ATTACK_METHOD = 'Recalculated Degree'
+# ATTACK_METHOD = 'RANDOM'
+
+##########################
 
 if __name__ == '__main__':
     net = pns.MixNetwork()
-    net.ini(data_addr)
+    net.ini(data_addr,ATTACK_METHOD)
 
     with open(pos_addr) as f_obj:
         pos = json.load(f_obj)
@@ -32,6 +41,7 @@ if __name__ == '__main__':
 
 
     def update_fig(fig,ax):
+        ax.clear()
         color_map = {
             1: '#7cf4e5',  # light blue
             2: '#127fed',  # blue
@@ -48,6 +58,8 @@ if __name__ == '__main__':
             edge_colors.append(colour)
 
         nx.draw(net.edge, ps, with_labels=False, node_color=node_colors, edge_color=edge_colors, node_size=10, ax=ax)
+        if net.last_attacked != None:
+            ax.plot(ps[net.last_attacked][0],ps[net.last_attacked][1],color='m',marker='o',markersize=5) ## purple
 
 
 
@@ -83,15 +95,43 @@ if __name__ == '__main__':
         update_fig(fig, ax)
         canvas.draw()
         text.insert("insert", "- One step completes.\n")
+        text.insert("insert", "Step " + str(net.step) +
+                    ". Last attacked node id: "+str(net.last_attacked)+
+                    ". Left attack power amount: "+str(net.attacker.power_amount)+'.\n')
+        text.see('insert')
+
+    def _briefly_describe():
+        num, rate, waste_load = net.describe_defeated_breif()
+        sentence = '- Breifly Description in Step ' + str(net.step) + '.\n' + \
+                   'Defeated nodes number is: ' + str(num) + '. Rate is: ' + str(rate) + \
+                   '. Total wasted load is: ' + str(waste_load) + '.\n'
+        text.insert('insert',sentence)
+        text.see('insert')
+
+    def _normal_describe():
+        largest_components_num,rate = net.describe_defeated_normal()
+        sentence = '- Normal Description in Step ' + str(net.step) + '.\n' + \
+                   ' Largest components nodes number: ' + str(largest_components_num) + '. Connectivity rate is: ' + str(rate) + '.\n'
+        text.insert('insert',sentence)
+        text.see('insert')
 
 
 
-    button = tkinter.Button(master=mixnet, text='Next Step', command = _next_step)
-    button.pack(side=tkinter.TOP,fill=tkinter.X)
+
+
+
+
+    button0 = tkinter.Button(master=mixnet, text='Next Step', command = _next_step,height=2)
+    button0.pack(side=tkinter.TOP,fill=tkinter.X)
+    button1 = tkinter.Button(master=mixnet, text='Breif Description', command = _briefly_describe,height=2)
+    button1.pack(side=tkinter.TOP,fill=tkinter.X)
+    button2 = tkinter.Button(master=mixnet, text='Normal Description', command = _normal_describe,height=2)
+    button2.pack(side=tkinter.TOP,fill=tkinter.X)
 
     update_fig(fig, ax)
     text.insert("insert", "- Network initiate completes.\n")
     text.insert("insert",'- '+ net.describe_overall() + '\n')
+
 
 
 

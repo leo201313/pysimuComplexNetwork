@@ -17,6 +17,8 @@ def maxlimit(a,limit):
     else:
         return a
 
+
+
 class MixNetwork(object):
     def __init__(self):
         self.edge = nx.Graph()
@@ -24,10 +26,12 @@ class MixNetwork(object):
         self.attacker = Attacker()
         self.influenced = set()
         self.step = 0
-        self.attack_method = 'RD'
+        self.attack_method = 'Recalculated Degree'
         self.end_flag = False
+        self.last_attacked = None
+        self.origin_max_components_num = None
 
-    def ini(self,data_addr):
+    def ini(self,data_addr,attack_method='Recalculated Degree'):
         """
         Initiate the MixNet
         :param data_addr: The file address of dataset
@@ -51,6 +55,10 @@ class MixNetwork(object):
         self.attacker.ini()
         self.end_flag = False
         self.influenced = set()
+        self.attack_method = attack_method
+        self.last_attacked = None
+        self.step = 0
+        self.origin_max_components_num = None
 
 
     def live_degree(self,nodeid):
@@ -208,7 +216,10 @@ class MixNetwork(object):
         return nodes_viewed
 
     def attack(self):
-        if self.attack_method == 'RD':
+        attack_nodeid = None
+        attack_power = 0
+#############################################################
+        if self.attack_method == 'Recalculated Degree':
             concerned_nodes = self.live_nodes_in_view(self.attacker.position,self.attacker.view_range)
             degree_lst = {}
             for nodeid in concerned_nodes:
@@ -216,11 +227,26 @@ class MixNetwork(object):
             attack_nodeid = max(degree_lst,key=degree_lst.get)
             attack_power = self.node.attack_cost[attack_nodeid] + 50
             self.attacker.consist_list[attack_nodeid] = self.node.recovery_ability[attack_nodeid]
+##############################################################
+        if self.attack_method == 'RANDOM':
+            concerned_nodes = self.live_nodes_in_view(self.attacker.position, self.attacker.view_range)
+            randindex = random.randint(0, len(concerned_nodes) - 1)
+            attack_nodeid = concerned_nodes[randindex]
+            attack_power = self.node.attack_cost[attack_nodeid] + 50
+            self.attacker.consist_list[attack_nodeid] = self.node.recovery_ability[attack_nodeid]
+##############################################################
+        if attack_nodeid == None:
+            print('Error: No node to be chosen as attacked!')
         return attack_nodeid,attack_power
 
+
+
+
+
     def next_position(self,attackednode):
-        if self.attack_method == 'RD':
-            next_position = None
+        next_position = None
+###############################################################
+        if self.attack_method == 'Recalculated Degree':
             max_degree = 0
             for randnode in self.influenced:
                 if self.node.state[randnode] == 1:
@@ -228,19 +254,9 @@ class MixNetwork(object):
                     if  temp_live_degree > max_degree:
                         next_position = randnode
                         max_degree = temp_live_degree
-
-            if next_position == None:
-                print('Error: No node to be chosen as next position!')
-
-            return next_position
-
-
-
-
-
+#################################################################
         if self.attack_method == 'RANDOM':
             concerned_nodes = self.nodes_in_view(attackednode,1)
-            next_position = None
             live_nodes = []
             for node in concerned_nodes:
                 if self.node.state[node] == 1:
@@ -257,12 +273,10 @@ class MixNetwork(object):
             else:
                 randindex = random.randint(0,len_live_nodes-1)
                 next_position = live_nodes[randindex]
-
-
-            if next_position == None:
-                print('Error: No node to be chosen as next position!')
-
-            return next_position
+##########################################################################
+        if next_position == None:
+            print('Error: No node to be chosen as next position!')
+        return next_position
 
     def describe_overall(self):
         sentence = 'Total nodes: ' + str(len(self.node.id_list)) + \
@@ -318,6 +332,8 @@ class MixNetwork(object):
             print('Warning: Run out of Power!')
             pass
 
+        self.step += 1
+
         for consist_node in self.attacker.consist_list:
             self.attacker.power_amount -= self.attacker.consist_list[consist_node]
 
@@ -347,15 +363,40 @@ class MixNetwork(object):
         self.redistribute(attack_nodeid)
         self.attack_update()
         self.attacker.position = self.next_position(attack_nodeid)
+        self.last_attacked = attack_nodeid
 
-    def describe_defeated_num(self):
+    def describe_defeated_breif(self):
         num = 0
+        waste_load = 0
         for node in self.influenced:
             if self.node.state[node] != 1:
                 num += 1
+                waste_load += self.node.load[node]
 
         rate = num / self.node.num
-        return num,rate
+        return num,rate,waste_load
+
+    def live_graph(self):
+        live = []
+        for nodeid in self.node.id_list:
+            if self.node.state[nodeid] == 1:
+                live.append(nodeid)
+        liveG= self.edge.subgraph(live)
+        return liveG
+
+    def describe_defeated_normal(self):
+        if self.origin_max_components_num == None:
+            origin_largest_components = max(nx.connected_components(self.edge), key=len)
+            self.origin_max_components_num = len(origin_largest_components)
+        lg = self.live_graph()
+        largest_components = max(nx.connected_components(lg), key=len)
+        largest_components_num = len(largest_components)
+        rate = largest_components_num / self.origin_max_components_num
+        return largest_components_num,rate
+
+
+
+
 
 
 
