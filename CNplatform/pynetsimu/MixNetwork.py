@@ -78,6 +78,8 @@ class MixNetwork(object):
         load_amout = self.node.load[nodeid]
         load_order_amounts = {}
 
+        self.influenced.add(nodeid)
+
         while order <= max_order:
             if order == max_order:
                 temp_load_amount = load_amout
@@ -91,19 +93,24 @@ class MixNetwork(object):
 
             for temp_node in temp_adjacent:
                 if adjacent[temp_node] == (order-1):
-                    neighbors = self.live_neighbors(temp_node)
+                    neighbors = list(self.edge.neighbors(temp_node))
                     for nei_id in neighbors:
                         if nei_id not in adjacent:
                             adjacent[nei_id] = order
-                            order_degree_amount += (self.live_degree(nei_id) + 1)
+                            if self.node.state[nei_id] == 1:
+                                order_degree_amount += (self.live_degree(nei_id) + 1)
 
             degree_amounts[order] = order_degree_amount
             order += 1
 
-        adjacent.pop(nodeid)
-        self.influenced.add(nodeid)
+        live_adjacent = []
+        for adj_node in adjacent:
+            if self.node.state[adj_node] == 1:
+                live_adjacent.append(adj_node)
 
-        for adj in adjacent:
+
+
+        for adj in live_adjacent:
             self.influenced.add(adj)
             adj_order = adjacent[adj]
             temp_append_load = int(load_order_amounts[adj_order] * (self.live_degree(adj) + 1) / degree_amounts[adj_order])
