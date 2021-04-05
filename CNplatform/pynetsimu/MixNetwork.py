@@ -2,6 +2,7 @@ import networkx as nx
 from .Nodes import Node
 from .Attacker import Attacker
 import random
+from math import sqrt
 
 random.seed(2021)
 
@@ -12,7 +13,9 @@ def relu(a):
         return 0
 
 def maxlimit(a,limit):
-    if a > limit:
+    if a < 0:
+        return 0
+    elif a > limit:
         return limit
     else:
         return a
@@ -115,8 +118,6 @@ class MixNetwork(object):
         for adj_node in adjacent:
             if self.node.state[adj_node] == 1:
                 live_adjacent.append(adj_node)
-
-
 
         for adj in live_adjacent:
             self.influenced.add(adj)
@@ -226,14 +227,14 @@ class MixNetwork(object):
                 degree_lst[nodeid] = self.live_degree(nodeid)
             attack_nodeid = max(degree_lst,key=degree_lst.get)
             attack_power = self.node.attack_cost[attack_nodeid] + 50
-            self.attacker.consist_list[attack_nodeid] = self.node.recovery_ability[attack_nodeid]
+            self.attacker.consist_list[attack_nodeid] = int(sqrt(self.node.recovery_ability[attack_nodeid]*50) + 5)
 ##############################################################
         if self.attack_method == 'RANDOM':
             concerned_nodes = self.live_nodes_in_view(self.attacker.position, self.attacker.view_range)
             randindex = random.randint(0, len(concerned_nodes) - 1)
             attack_nodeid = concerned_nodes[randindex]
             attack_power = self.node.attack_cost[attack_nodeid] + 50
-            self.attacker.consist_list[attack_nodeid] = self.node.recovery_ability[attack_nodeid]
+            self.attacker.consist_list[attack_nodeid] = int(sqrt(self.node.recovery_ability[attack_nodeid]*50) + 5)
 ##############################################################
         if attack_nodeid == None:
             print('Error: No node to be chosen as attacked!')
@@ -287,7 +288,9 @@ class MixNetwork(object):
 
 
 
-
+    def compute_recovery(self,nodeid):
+        now_recovery = int(sqrt(self.node.recovery_ability[nodeid]*self.node.health[nodeid]) + 5)
+        return now_recovery
 
 
 
@@ -339,10 +342,10 @@ class MixNetwork(object):
 
         for node in self.influenced:
             if node in self.attacker.consist_list:
-                temp_health = self.node.health[node] + relu(self.node.recovery_ability[node] - self.attacker.consist_list[node])
+                temp_health = self.node.health[node] + relu(self.compute_recovery(node) - self.attacker.consist_list[node])
                 self.node.health[node] = maxlimit(temp_health,100)
             else:
-                temp_health = self.node.health[node] + self.node.recovery_ability[node]
+                temp_health = self.node.health[node] + self.compute_recovery(node)
                 self.node.health[node] = maxlimit(temp_health, 100)
 
 
