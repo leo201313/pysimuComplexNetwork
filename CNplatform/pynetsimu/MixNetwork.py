@@ -29,12 +29,13 @@ class MixNetwork(object):
         self.attacker = Attacker()
         self.influenced = set()
         self.step = 0
-        self.attack_method = 'Recalculated Degree'
+        self.attack_method = 'RD'
         self.end_flag = False
         self.last_attacked = None
+        self.last_overload = []
         self.origin_max_components_num = None
 
-    def ini(self,data_addr,attack_method='Recalculated Degree'):
+    def ini(self,data_addr,attack_method='RD'):
         """
         Initiate the MixNet
         :param data_addr: The file address of dataset
@@ -60,6 +61,7 @@ class MixNetwork(object):
         self.influenced = set()
         self.attack_method = attack_method
         self.last_attacked = None
+        self.last_overload = []
         self.step = 0
         self.origin_max_components_num = None
 
@@ -236,6 +238,7 @@ class MixNetwork(object):
 
 
     def attack_update(self,iterations=5):
+        self.last_overload = []
         iteration = 1
         while iteration <= iterations:
             early_out = 1
@@ -243,6 +246,7 @@ class MixNetwork(object):
             for node in temp_influenced:
                 if self.node.state[node] == 1:
                     if (self.node.load[node] + self.node.append_load[node]) > self.node.load_capacity[node]:
+                        self.last_overload.append(node)
                         self.node.state[node] = 2
                         self.node.health[node] = 0
                         self.redistribute(node)
@@ -280,7 +284,9 @@ class MixNetwork(object):
         self.redistribute(attack_nodeid)
         self.attack_update()
         self.last_attacked = attack_nodeid
+        self.attacker.update_consist(self)
         self.attacker.position = self.attacker.next_position(self)
+
 
 
         self.step += 1

@@ -6,13 +6,17 @@ import warnings
 
 warnings.filterwarnings("ignore")
 ####################################################
-dataset = 'facebook_combined'
+# dataset = 'facebook_combined'
+# dataset = 'roadNet-TX'
+dataset = 'p2p-Gnutella31'
 
 data_addr = "../data/" + dataset + ".txt"
-pos_addr = "../data/" + dataset + ".json"
 ####################################################
-# ATTACK_METHOD = 'Recalculated Degree'
-ATTACK_METHOD = 'RANDOM'
+ATTACK_METHOD = 'RD' #Recalculated Degree
+# ATTACK_METHOD = 'RANDOM'
+# ATTACK_METHOD = 'RDRS' #Recalculated Degree and Recovery Stifle
+# ATTACK_METHOD = 'RANDOMRS' #Random and and Recovery Stifle
+
 
 ####################################################
 
