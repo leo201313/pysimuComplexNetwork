@@ -13,8 +13,8 @@ warnings.filterwarnings("ignore")
 
 #########################
 
-dataset = 'USpowerGrid'
-# dataset = 'ba500'
+# dataset = 'USpowerGrid'
+dataset = 'ba500'
 # dataset = 'facebook_combined'
 
 data_addr = "../data/" + dataset + ".txt"
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         for nodeid,ps_ele in pos.items():
             ps[int(nodeid)] = np.array(ps_ele)
 
-    fig = Figure(figsize=(15, 8), dpi=100)
+    fig = Figure(figsize=(12, 6), dpi=100)
     ax = fig.add_subplot(111)
 
 

@@ -7,7 +7,8 @@
 最近在做毕业设计，题目为建立一个复杂网络级联攻击模型。在查阅了各方面文献后，发现python编写的复杂网络平台存在缺失，所以本人在networkx库的基础上进行拓展，建立了本复杂网络级联攻击仿真平台，called MixNetwork！
 
 ## Update 
-* v1.3 更新了节点恢复模型的曲线设定，更加符合实际需求
+* v2.0 优化了攻击方法的数据结构，编写了不要GUI的运行方式，实现了计算单次攻击消耗来判断攻击是否达到稳态，修复了各种bug
+* v1.3 更新了节点恢复模型的曲线设定，设置被级联故障的节点也能够自我恢复，同时节点恢复不再采用级联的恢复方式，更加符合实际需求
 * v1.2 更新了节点恢复模型，现在的节点恢复模型是通过恢复曲线进行计算的，同时已有的两种攻击模型也根据新的恢复模型进行了优化
 * v1.1 优化了RD攻击模型的局部位置移动算法；增加了随机攻击模型RANDOM；增加了叙述攻击模型攻击效果的两种方式；使用紫色节点绘制上一次攻击的节点，方便区分已经被攻击的节点。
 * v1.0 项目开源
@@ -16,7 +17,9 @@
 ## How to use
 Just do as follow:
 
-**python3 CNplatform/pynetsimu/run.py** 
+**python3 CNplatform/pynetsimu/run_gui.py** to use MixNetwork with GUI
+
+**python3 CNplatform/pynetsimu/run_normal.py** to use MixNetwork much faster but without GUI
 
 Python Version: 3.7
 
