@@ -55,6 +55,48 @@ class Attacker(object):
             attack_power = net.node.attack_cost[attack_nodeid] + 50
 
         #############################################################
+        if self.attack_method == 'NND':
+            concerned_nodes = net.live_nodes_in_view(net.attacker.position, net.attacker.view_range)
+            degree_lst = {}
+            for nodeid in concerned_nodes:
+                degree_lst[nodeid] = net.live_degree(nodeid)
+            max_degree_node = max(degree_lst, key=degree_lst.get)
+
+            nei_nodes = net.live_nodes_in_view(max_degree_node, 1)
+            nei_nodes.pop(0)
+            if len(nei_nodes) == 0:
+                attack_nodeid = max_degree_node
+                attack_power = net.node.attack_cost[attack_nodeid] + 50
+
+            else:
+                degree_lst0 = {}
+                for nodeid0 in nei_nodes:
+                    degree_lst0[nodeid0] = net.live_degree(nodeid0)
+                attack_nodeid = max(degree_lst0, key=degree_lst0.get)
+                attack_power = net.node.attack_cost[attack_nodeid] + 50
+
+        #############################################################
+        if self.attack_method == 'NNDRS':
+            concerned_nodes = net.live_nodes_in_view(net.attacker.position, net.attacker.view_range)
+            degree_lst = {}
+            for nodeid in concerned_nodes:
+                degree_lst[nodeid] = net.live_degree(nodeid)
+            max_degree_node = max(degree_lst, key=degree_lst.get)
+
+            nei_nodes = net.live_nodes_in_view(max_degree_node, 1)
+            nei_nodes.pop(0)
+            if len(nei_nodes) == 0:
+                attack_nodeid = max_degree_node
+                attack_power = net.node.attack_cost[attack_nodeid] + 50
+
+            else:
+                degree_lst0 = {}
+                for nodeid0 in nei_nodes:
+                    degree_lst0[nodeid0] = net.live_degree(nodeid0)
+                attack_nodeid = max(degree_lst0, key=degree_lst0.get)
+                attack_power = net.node.attack_cost[attack_nodeid] + 50
+
+        #############################################################
 
 
 
@@ -83,6 +125,16 @@ class Attacker(object):
             self.consist_list[net.last_attacked] = net.compute_recovery(net.last_attacked)
             for node in net.last_overload:
                 self.consist_list[node] = net.compute_recovery(node)
+        #############################################################
+        if self.attack_method == 'NND':
+            self.consist_list[net.last_attacked] = net.compute_recovery(net.last_attacked)
+        #############################################################
+        if self.attack_method == 'NNDRS':
+            self.consist_list[net.last_attacked] = net.compute_recovery(net.last_attacked)
+            for node in net.last_overload:
+                self.consist_list[node] = net.compute_recovery(node)
+        #############################################################
+
 
 
 
@@ -146,6 +198,24 @@ class Attacker(object):
                 randindex = random.randint(0, len_live_nodes - 1)
                 next_position = live_nodes[randindex]
         ##########################################################################
+        if self.attack_method == 'NND':
+            max_degree = 0
+            for randnode in net.influenced:
+                if net.node.state[randnode] == 1:
+                    temp_live_degree = net.live_degree(randnode)
+                    if temp_live_degree > max_degree:
+                        next_position = randnode
+                        max_degree = temp_live_degree
+        #################################################################
+        if self.attack_method == 'NNDRS':
+            max_degree = 0
+            for randnode in net.influenced:
+                if net.node.state[randnode] == 1:
+                    temp_live_degree = net.live_degree(randnode)
+                    if temp_live_degree > max_degree:
+                        next_position = randnode
+                        max_degree = temp_live_degree
+        #################################################################
         if next_position == None:
             print('Error: No node to be chosen as next position!')
         return next_position

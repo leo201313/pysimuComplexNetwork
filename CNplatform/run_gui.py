@@ -13,8 +13,8 @@ warnings.filterwarnings("ignore")
 
 #########################
 
-# dataset = 'USpowerGrid'
-dataset = 'ba500'
+dataset = 'USpowerGrid'
+# dataset = 'ba500'
 # dataset = 'facebook_combined'
 
 data_addr = "../data/" + dataset + ".txt"
@@ -22,8 +22,10 @@ pos_addr = "../data/" + dataset + ".json"
 ##########################
 # ATTACK_METHOD = 'RD' #Recalculated Degree
 # ATTACK_METHOD = 'RANDOM'
-ATTACK_METHOD = 'RDRS' #Recalculated Degree and Recovery Stifle
+# ATTACK_METHOD = 'RDRS' #Recalculated Degree and Recovery Stifle
 # ATTACK_METHOD = 'RANDOMRS' #Random and and Recovery Stifle
+# ATTACK_METHOD = 'NND' #Neighbor Nodes of Max Degree Node
+ATTACK_METHOD = 'NNDRS' #Neighbor Nodes of Max Degree Node and Recovery Stifle
 ##########################
 
 if __name__ == '__main__':

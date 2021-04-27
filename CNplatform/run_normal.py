@@ -7,16 +7,17 @@ import warnings
 warnings.filterwarnings("ignore")
 ####################################################
 # dataset = 'facebook_combined'
-# dataset = 'roadNet-TX'
-dataset = 'p2p-Gnutella31'
+dataset = 'roadNet-TX'
+# dataset = 'p2p-Gnutella31'
 
 data_addr = "../data/" + dataset + ".txt"
 ####################################################
-ATTACK_METHOD = 'RD' #Recalculated Degree
+# ATTACK_METHOD = 'RD' #Recalculated Degree
 # ATTACK_METHOD = 'RANDOM'
 # ATTACK_METHOD = 'RDRS' #Recalculated Degree and Recovery Stifle
 # ATTACK_METHOD = 'RANDOMRS' #Random and and Recovery Stifle
-
+# ATTACK_METHOD = 'NND' #Neighbor Nodes of Max Degree Node
+ATTACK_METHOD = 'NNDRS' #Neighbor Nodes of Max Degree Node and Recovery Stifle
 
 ####################################################
 
@@ -56,6 +57,12 @@ if __name__ == '__main__':
                         'Defeated nodes number is: ' + str(num) + '. Rate is: ' + str(rate) + \
                         '. Total wasted load is: ' + str(waste_load) + '.\n'
             print(sentence0)
+
+            largest_components_num, rate = net.describe_defeated_normal()
+            sentence1 = '- Normal Description in Step ' + str(net.step) + '.\n' + \
+                        ' Largest components nodes number: ' + str(
+                largest_components_num) + '. Connectivity rate is: ' + str(rate) + '.\n'
+            print(sentence1)
 
             break
 

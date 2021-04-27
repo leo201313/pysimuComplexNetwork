@@ -42,7 +42,7 @@ class Node(object):
             self.state[nodeid] = 1
             self.append_load[nodeid] = 0
 
-            load_capacity = int(abs(random.normalvariate(100,20)) + 1.1*self.load[nodeid])
+            load_capacity = int(abs(random.normalvariate(100,20)) + 1.2*self.load[nodeid])
             self.load_capacity[nodeid] = load_capacity
 
             attack_cost = 10 + abs(random.normalvariate(20,5)) + \
