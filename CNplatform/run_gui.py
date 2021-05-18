@@ -7,28 +7,82 @@ import json
 import numpy as np
 import warnings
 import tkinter
+from tkinter import ttk
+
 
 warnings.filterwarnings("ignore")
 
 
 #########################
 
-dataset = 'USpowerGrid'
+# dataset = 'USpowerGrid'
 # dataset = 'ba500'
+# dataset = 'ws50'
 # dataset = 'facebook_combined'
 
-data_addr = "../data/" + dataset + ".txt"
-pos_addr = "../data/" + dataset + ".json"
+default_dataset = ('ba500','ws50','USpowerGrid','facebook_combined')
+
+# data_addr = "../data/" + dataset + ".txt"
+# pos_addr = "../data/" + dataset + ".json"
 ##########################
 # ATTACK_METHOD = 'RD' #Recalculated Degree
 # ATTACK_METHOD = 'RANDOM'
 # ATTACK_METHOD = 'RDRS' #Recalculated Degree and Recovery Stifle
 # ATTACK_METHOD = 'RANDOMRS' #Random and and Recovery Stifle
 # ATTACK_METHOD = 'NND' #Neighbor Nodes of Max Degree Node
-ATTACK_METHOD = 'NNDRS' #Neighbor Nodes of Max Degree Node and Recovery Stifle
+# ATTACK_METHOD = 'NNDRS' #Neighbor Nodes of Max Degree Node and Recovery Stifle
+# ATTACK_METHOD = 'OC' # The proposed mix attack method
+
+default_method = ('RD','RANDOM','NND','RDRS','RANDOMRS','NNDRS','OC')
 ##########################
 
+dataset = 'ba500'
+ATTACK_METHOD = 'RD'
+
 if __name__ == '__main__':
+
+
+    director = tkinter.Tk()
+    director.title('MixNetwork Director')
+    director.geometry("300x160+200+20")
+
+    tkinter.Label(director, text='Dataset：').place(x=10, y=30)
+    tkinter.Label(director, text='Method：').place(x=10, y=70)
+
+    dataset_select = tkinter.StringVar()
+    method_select = tkinter.StringVar()
+
+    com_dataset =  ttk.Combobox(director, textvariable=dataset_select)
+    com_method = ttk.Combobox(director, textvariable=method_select)
+
+    com_dataset.place(x=100,y=30)
+    com_method.place(x=100,y=70)
+
+    # com_dataset.pack()
+    # com_method.pack()
+
+    com_dataset["value"] = default_dataset
+    com_dataset.current(0)
+
+    com_method["value"] = default_method
+    com_method.current(0)
+
+
+    def getValue():
+        global dataset
+        global ATTACK_METHOD
+        dataset = dataset_select.get()
+        ATTACK_METHOD = method_select.get()
+        director.destroy()
+
+
+    ini_butt = tkinter.Button(director, text="Init the Simu Platform", width=30, pady=2, command=getValue)
+    ini_butt.place(x=40,y=110)
+    director.mainloop()
+
+    data_addr = "../data/" + dataset + ".txt"
+    pos_addr = "../data/" + dataset + ".json"
+
     net = pns.MixNetwork()
     net.ini(data_addr,ATTACK_METHOD)
 

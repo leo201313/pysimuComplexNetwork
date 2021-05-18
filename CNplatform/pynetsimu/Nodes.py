@@ -45,15 +45,15 @@ class Node(object):
             load_capacity = int(abs(random.normalvariate(100,20)) + 1.2*self.load[nodeid])
             self.load_capacity[nodeid] = load_capacity
 
-            attack_cost = 10 + abs(random.normalvariate(20,5)) + \
-                          200 * (degree_centrality[nodeid] - degree_centrality[min_degree_node]) / degree_delta
+            attack_cost = 50 + abs(random.normalvariate(100,20)) + \
+                          2000 * (degree_centrality[nodeid] - degree_centrality[min_degree_node]) / degree_delta
             attack_cost = int(attack_cost)
             self.attack_cost[nodeid] = attack_cost
 
             if clustering_delta==0:
-                recovery = abs(random.normalvariate(9, 3))
+                recovery = abs(random.normalvariate(9, 3)) + attack_cost / 50
             else:
-                recovery = abs(random.normalvariate(9,3)) + 16 * (clustering[nodeid] - clustering[min_clustering]) / clustering_delta
+                recovery = abs(random.normalvariate(9,3)) + attack_cost / 50 + 16 * (clustering[nodeid] - clustering[min_clustering]) / clustering_delta
             recovery = int(recovery)
             self.recovery_ability[nodeid] = recovery
 

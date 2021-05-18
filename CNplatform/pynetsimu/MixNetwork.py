@@ -65,6 +65,13 @@ class MixNetwork(object):
         self.step = 0
         self.origin_max_components_num = None
 
+    def live_betweenness(self,nodeid,compute_range=3):
+        nodes_set = self.live_nodes_in_view(nodeid,view_range=compute_range)
+        subgraph = self.edge.subgraph(nodes_set)
+        loc_betweenness = nx.betweenness_centrality(subgraph)
+        return loc_betweenness
+
+
 
     def live_degree(self,nodeid):
         neighbors = list(self.edge.neighbors(nodeid))
@@ -228,12 +235,43 @@ class MixNetwork(object):
                    ', Attack Method: ' + self.attack_method
         return sentence
 
+
+
+
     def compute_recovery(self,nodeid):
         # now_recovery = int(sqrt(self.node.recovery_ability[nodeid]*self.node.health[nodeid]) + 5)
         now_recovery = int(sqrt(self.node.recovery_ability[nodeid]) *
-                           (self.node.health[nodeid]) * (self.node.health[nodeid] + 10) / 100 + 5)
+                           (self.node.health[nodeid]) * (self.node.health[nodeid] + 10) / 100 + 10)
         return now_recovery
 
+    def predict_recovery(self,nodeid):
+        now_recovery = int(sqrt(self.node.recovery_ability[nodeid]) *
+                           (self.node.health[nodeid]) * (self.node.health[nodeid] + 10) / 100 + 10)
+        predict_health = now_recovery / 5 + self.node.health[nodeid]
+        if predict_health >= 50:
+            return now_recovery
+
+        predict_recovery = int(sqrt(self.node.recovery_ability[nodeid]) *
+                           (predict_health) * (predict_health + 10) / 100 + 10)
+        if predict_recovery - now_recovery > 10:
+            return now_recovery
+
+        return 0
+
+
+    # def compute_threshold(self,nodeid):
+    #     alpha = sqrt(self.node.recovery_ability[nodeid])
+    #     beta = 250 / alpha
+    #     thresh1 = int(sqrt(3*beta**2-2*beta+25) - beta - 5)
+    #     thresh2 = int(sqrt(beta**2+106*beta+25)-5-beta)
+    #     thresh = thresh2
+    #     if thresh1 < thresh2 :
+    #         thresh = thresh1
+    #
+    #     if thresh < 0:
+    #         return 0
+    #     else:
+    #         return thresh
 
 
 
@@ -267,10 +305,14 @@ class MixNetwork(object):
             if self.node.health[node] != 100:
                 if node in self.attacker.consist_list:
                     consume += self.attacker.consist_list[node]
-                    temp_health = self.node.health[node] + relu(self.compute_recovery(node) - self.attacker.consist_list[node])
-                    self.node.health[node] = maxlimit(temp_health,100)
+                    delta_health = relu(self.compute_recovery(node) - self.attacker.consist_list[node])
+                    if (delta_health <= 0) & (self.node.state[node] != 1):
+                        self.node.health[node] = 0
+                    else:
+                        temp_health = self.node.health[node] + delta_health / 5
+                        self.node.health[node] = maxlimit(temp_health,100)
                 else:
-                    temp_health = self.node.health[node] + self.compute_recovery(node)
+                    temp_health = self.node.health[node] + self.compute_recovery(node) / 5
                     self.node.health[node] = maxlimit(temp_health, 100)
 
             if (self.node.health[node] > 50) & (self.node.state[node]!=1) :
@@ -279,6 +321,7 @@ class MixNetwork(object):
                 self.reallocate(node)
 
         attack_nodeid, attack_power = self.attacker.attack(self)
+        self.attacker.power_amount -= consume
         consume += attack_power
         self.attacker.last_consume = consume
         self.redistribute(attack_nodeid)
